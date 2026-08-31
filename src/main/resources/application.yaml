@@ -2,21 +2,12 @@ spring:
   application:
     name: book-list
 
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydb
+    username: postgres
+    password: mypassword
 
-version: '3.8'
-
-services:
-  postgres:
-    image: postgres:15-alpine
-    container_name: postgres_db
-    environment:
-      POSTGRES_USER:
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: mydb
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
-volumes:
-  pgdata:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

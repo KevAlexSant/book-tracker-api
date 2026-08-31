@@ -1,0 +1,8 @@
+package org.kashboikev.booklist.repositories;
+
+import org.kashboikev.booklist.models.Author;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface AuthorRepository extends JpaRepository<Author, Integer> {
+
+}
