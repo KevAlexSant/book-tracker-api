@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: book_list_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: book_list_app
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata_book_list:/var/lib/postgresql/data
+
+volumes:
+  pgdata_book_list:
