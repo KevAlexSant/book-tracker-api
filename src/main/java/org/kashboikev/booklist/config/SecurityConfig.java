@@ -25,7 +25,11 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .permitAll()
-                ).httpBasic(Customizer.withDefaults());
+                ).logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout")
+                .permitAll())g
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
