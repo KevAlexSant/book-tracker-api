@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Books</title>
+</head>
+<body>
+
+<h1>Search Google Books</h1>
+
+<form th:action="@{/books/search}" method="get">
+    <input
+            type="text"
+            name="q"
+            placeholder="Search by title, author, ISBN..."
+            required>
+
+    <button type="submit">Search</button>
+</form>
+
+<hr>
+
+<div th:if="${results != null}">
+
+    <div th:if="${#lists.isEmpty(results)}">
+        <p>No books found.</p>
+    </div>
+
+    <div th:each="book : ${results}">
+
+        <h2 th:text="${book.volumeInfo.title}">
+            Book Title
+        </h2>
+
+        <p>
+            <strong>Authors:</strong>
+
+            <span th:if="${book.volumeInfo.authors != null}"
+                  th:text="${#strings.listJoin(book.volumeInfo.authors, ', ')}">
+                Author Name
+            </span>
+
+            <span th:if="${book.volumeInfo.authors == null}">
+                Unknown author
+            </span>
+        </p>
+
+        <p th:if="${book.volumeInfo.description != null}">
+            <strong>Description:</strong>
+            <span th:text="${book.volumeInfo.description}">
+                Description
+            </span>
+        </p>
+
+        <div th:if="${book.volumeInfo.industryIdentifiers != null}">
+            <strong>Identifiers:</strong>
+
+            <ul>
+                <li th:each="identifier : ${book.volumeInfo.industryIdentifiers}">
+                    <span th:text="${identifier.type}"></span>:
+                    <span th:text="${identifier.identifier}"></span>
+                </li>
+            </ul>
+        </div>
+
+        <p>
+            <strong>Google Volume ID:</strong>
+            <span th:text="${book.id}"></span>
+        </p>
+
+        <hr>
+    </div>
+
+</div>
+
+</body>
+</html>
