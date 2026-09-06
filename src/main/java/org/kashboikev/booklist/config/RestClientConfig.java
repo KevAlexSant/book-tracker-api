@@ -8,8 +8,8 @@ import org.springframework.web.client.RestClient;
 public class RestClientConfig {
 
     @Bean
-    public RestClient googleBooksRestClient(RestClient.Builder builder) {
-        return builder
+    public RestClient googleBooksRestClient() {
+        return RestClient.builder()
                 .baseUrl("https://www.googleapis.com/books/v1")
                 .build();
     }
