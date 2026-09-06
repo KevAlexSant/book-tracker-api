@@ -1,0 +1,154 @@
+```html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Bookshelf</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .search-button {
+            text-decoration: none;
+            background-color: #333;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 5px;
+        }
+
+        .book-entry {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .book-title {
+            margin-top: 0;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>My Bookshelf</h1>
+
+    <a th:href="@{/books/search}" class="search-button">
+        Search for Books
+    </a>
+</div>
+
+
+<!-- If the user has no books -->
+<p th:if="${#lists.isEmpty(bookEntries)}">
+    Your bookshelf is currently empty.
+</p>
+
+
+<!-- Loop through all BookEntry objects -->
+<div th:each="entry : ${bookEntries}" class="book-entry">
+
+    <!-- Book title -->
+    <h2 class="book-title"
+        th:text="${entry.book.title}">
+        Book Title
+    </h2>
+
+
+    <!-- Authors -->
+    <div>
+        <span class="label">Authors:</span>
+
+        <span th:each="author, status : ${entry.book.authors}">
+            <span th:text="${author.firstName + ' ' + author.lastName}">
+                Author Name
+            </span>
+
+            <!-- Add comma unless this is the last author -->
+            <span th:if="${!status.last}">, </span>
+        </span>
+    </div>
+
+
+    <!-- Genre -->
+    <p>
+        <span class="label">Genre:</span>
+        <span th:text="${entry.book.genre}">
+            Genre
+        </span>
+    </p>
+
+
+    <!-- Published date -->
+    <p>
+        <span class="label">Published:</span>
+        <span th:text="${entry.book.publishedDate}">
+            Published Date
+        </span>
+    </p>
+
+
+    <!-- Reading status -->
+    <p>
+        <span class="label">Status:</span>
+        <span th:text="${entry.readingStatus}">
+            Reading Status
+        </span>
+    </p>
+
+
+    <!-- Rating -->
+    <p>
+        <span class="label">Rating:</span>
+
+        <span th:if="${entry.rating != null}"
+              th:text="${entry.rating + ' / 5'}">
+            Rating
+        </span>
+
+        <span th:if="${entry.rating == null}">
+            Not rated yet
+        </span>
+    </p>
+
+
+    <!-- Description -->
+    <p th:if="${entry.book.description != null}">
+        <span class="label">Description:</span>
+        <span th:text="${entry.book.description}">
+            Description
+        </span>
+    </p>
+
+
+    <!-- ISBN -->
+    <p th:if="${entry.book.isbn13 != null}">
+        <span class="label">ISBN-13:</span>
+        <span th:text="${entry.book.isbn13}">
+            ISBN
+        </span>
+    </p>
+
+</div>
+
+</body>
+</html>
+```
