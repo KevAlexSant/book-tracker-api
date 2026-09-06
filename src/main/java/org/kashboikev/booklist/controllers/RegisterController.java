@@ -1,7 +1,6 @@
 package org.kashboikev.booklist.controllers;
 
 import org.kashboikev.booklist.models.dto.RegisterRequest;
-import org.kashboikev.booklist.repositories.UserRepository;
 import org.kashboikev.booklist.services.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

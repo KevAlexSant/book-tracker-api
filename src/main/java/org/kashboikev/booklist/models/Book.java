@@ -5,9 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,15 +22,26 @@ public class Book {
 
     @Column(nullable = false)
     private String title;
-    @Column(nullable = false)
-    private BigDecimal price;
-    @Column(nullable = false)
+    @Column
     private String genre;
-    @Column(nullable = false)
+    @Column
     private LocalDate publishedDate;
+    @Column
+    private String description;
+    @Column(unique = true)
+    private String isbn10;
+    @Column(unique = true)
+    private String isbn13;
+    @Column(unique = true)
+    private String googleVolumeId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
-    private Author author;
+    @ManyToMany
+    @JoinTable(
+            name = "book_authors",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
+    private List<Author> authors = new ArrayList<>();
+
 
 }

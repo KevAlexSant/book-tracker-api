@@ -3,7 +3,6 @@ package org.kashboikev.booklist.services;
 import org.kashboikev.booklist.models.Book;
 import org.kashboikev.booklist.repositories.BookRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service

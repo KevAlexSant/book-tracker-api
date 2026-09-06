@@ -1,4 +1,4 @@
-package org.kashboikev.booklist.models;
+package org.kashboikev.booklist.models.records;
 
 public enum ReadingStatus {
     PLAN_TO_READ,

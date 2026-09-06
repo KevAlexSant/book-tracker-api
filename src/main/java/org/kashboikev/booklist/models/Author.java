@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,17 +20,16 @@ public class Author {
 
     public void addBook(Book book) {
         books.add(book);
-        book.setAuthor(this);
+        book.getAuthors().add(this);
     }
 
-
-    @Column(nullable = false)
+    @Column
     private String firstName;
 
-    @Column(nullable = false)
+    @Column
     private String lastName;
 
-    @OneToMany(mappedBy = "author")
+    @ManyToMany(mappedBy = "authors")
     private List<Book> books = new ArrayList<>();
 
 }

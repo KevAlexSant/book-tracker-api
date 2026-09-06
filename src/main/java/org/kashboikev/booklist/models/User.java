@@ -3,7 +3,7 @@ package org.kashboikev.booklist.models;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
+import org.kashboikev.booklist.models.records.Role;
 import java.util.ArrayList;
 import java.util.List;
 
