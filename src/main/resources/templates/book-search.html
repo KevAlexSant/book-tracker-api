@@ -1,14 +1,18 @@
+```html
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>Search Books</title>
 </head>
+
 <body>
 
 <h1>Search Google Books</h1>
 
 <form th:action="@{/books/search}" method="get">
+
     <input
             type="text"
             name="q"
@@ -16,9 +20,11 @@
             required>
 
     <button type="submit">Search</button>
+
 </form>
 
 <hr>
+
 
 <div th:if="${results != null}">
 
@@ -26,18 +32,48 @@
         <p>No books found.</p>
     </div>
 
+
     <div th:each="book : ${results}">
+
+
+        <!-- BOOK COVER -->
+
+        <div th:if="${book.volumeInfo.imageLinks != null
+                     and book.volumeInfo.imageLinks.thumbnail != null}">
+
+            <img
+                    th:src="${book.volumeInfo.imageLinks.thumbnail}"
+                    th:alt="${book.volumeInfo.title}"
+                    width="128">
+        </div>
+
+
+        <div th:if="${book.volumeInfo.imageLinks == null
+                     or book.volumeInfo.imageLinks.thumbnail == null}">
+
+            <p>No cover available</p>
+
+        </div>
+
+
+        <!-- TITLE -->
 
         <h2 th:text="${book.volumeInfo.title}">
             Book Title
         </h2>
 
+
+        <!-- AUTHORS -->
+
         <p>
             <strong>Authors:</strong>
 
-            <span th:if="${book.volumeInfo.authors != null}"
-                  th:text="${#strings.listJoin(book.volumeInfo.authors, ', ')}">
+            <span
+                    th:if="${book.volumeInfo.authors != null}"
+                    th:text="${#strings.listJoin(book.volumeInfo.authors, ', ')}">
+
                 Author Name
+
             </span>
 
             <span th:if="${book.volumeInfo.authors == null}">
@@ -45,33 +81,74 @@
             </span>
         </p>
 
+
+        <!-- DESCRIPTION -->
+
         <p th:if="${book.volumeInfo.description != null}">
+
             <strong>Description:</strong>
+
             <span th:text="${book.volumeInfo.description}">
                 Description
             </span>
+
         </p>
 
+
+        <!-- IDENTIFIERS -->
+
         <div th:if="${book.volumeInfo.industryIdentifiers != null}">
+
             <strong>Identifiers:</strong>
 
             <ul>
+
                 <li th:each="identifier : ${book.volumeInfo.industryIdentifiers}">
+
                     <span th:text="${identifier.type}"></span>:
+
                     <span th:text="${identifier.identifier}"></span>
+
                 </li>
+
             </ul>
+
         </div>
+
+
+        <!-- GOOGLE BOOK ID -->
 
         <p>
             <strong>Google Volume ID:</strong>
             <span th:text="${book.id}"></span>
         </p>
 
+
+        <!-- ADD TO SHELF -->
+
+        <form
+                th:action="@{/shelf/add}"
+                method="post">
+
+            <input
+                    type="hidden"
+                    name="googleBookId"
+                    th:value="${book.id}">
+
+            <button type="submit">
+                Add to Shelf
+            </button>
+
+        </form>
+
+
         <hr>
+
     </div>
 
 </div>
 
 </body>
+
 </html>
+```
