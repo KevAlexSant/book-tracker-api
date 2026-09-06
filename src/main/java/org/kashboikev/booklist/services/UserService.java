@@ -1,8 +1,9 @@
 package org.kashboikev.booklist.services;
 
-import org.kashboikev.booklist.models.Role;
+import org.kashboikev.booklist.models.records.Role;
 import org.kashboikev.booklist.models.User;
 import org.kashboikev.booklist.models.dto.RegisterRequest;
+import org.kashboikev.booklist.repositories.BookEntryRepository;
 import org.kashboikev.booklist.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,11 +12,15 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BookEntryRepository bookEntryRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository,
+                       BookEntryRepository bookEntryRepository,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.bookEntryRepository = bookEntryRepository;
     }
 
     public void register(RegisterRequest registerRequest) {
@@ -34,5 +39,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username).orElse(null);
+    }
 }
