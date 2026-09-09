@@ -1,5 +1,6 @@
 package org.kashboikev.booklist.services;
 
+import org.kashboikev.booklist.models.dto.GoogleBookItem;
 import org.kashboikev.booklist.models.dto.GoogleBooksResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,4 +29,16 @@ public class GoogleBooksService {
                 .retrieve()
                 .body(GoogleBooksResponse.class);
     }
+
+    public GoogleBookItem getBook(String id) {
+        return googleBooksRestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/volumes/{id}")
+                        .queryParam("key", apiKey)
+                        .build(id))
+                .retrieve()
+                .body(GoogleBookItem.class);
+    }
+
+
 }
