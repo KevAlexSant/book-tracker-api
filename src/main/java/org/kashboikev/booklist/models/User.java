@@ -34,11 +34,6 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-
-
-
-
-
     @OneToMany(mappedBy = "user")
     private List<BookEntry> entries = new ArrayList<>();
 
