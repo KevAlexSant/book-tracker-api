@@ -23,7 +23,7 @@ public class BookEntry {
     private Book book;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = true)
     private ReadingStatus readingStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,7 +31,8 @@ public class BookEntry {
 
     @Min(1)
     @Max(5)
-    @Column(name = "rating")
+    @Column(name = "rating", nullable = true)
     private Integer rating;
+
 
 }
