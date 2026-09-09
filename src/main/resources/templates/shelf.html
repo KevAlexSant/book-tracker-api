@@ -42,84 +42,88 @@
         .label {
             font-weight: bold;
         }
+
+        .rating-form {
+            margin-top: 10px;
+        }
     </style>
 </head>
 
 <body>
 
 <div class="header">
+
     <h1>My Bookshelf</h1>
 
     <a th:href="@{/books/search}" class="search-button">
         Search for Books
     </a>
+
 </div>
 
 
-<!-- If the user has no books -->
+<!-- EMPTY SHELF -->
 <p th:if="${#lists.isEmpty(bookEntries)}">
     Your bookshelf is currently empty.
 </p>
 
 
-<!-- Loop through all BookEntry objects -->
+<!-- BOOK ENTRIES -->
 <div th:each="entry : ${bookEntries}" class="book-entry">
 
-    <!-- Book title -->
+
+    <!-- TITLE -->
     <h2 class="book-title"
         th:text="${entry.book.title}">
         Book Title
     </h2>
 
 
+    <div th:if="${entry.book.authors != null and !#lists.isEmpty(entry.book.authors)}">
 
-    <div>
         <span class="label">Authors:</span>
 
         <span th:each="author, status : ${entry.book.authors}">
-            <span th:text="${author.name}">
-                Author Name
-            </span>
+        <span th:text="${author}">Author Name</span>
+        <span th:if="${!status.last}">, </span>
+    </span>
 
-
-            <span th:if="${!status.last}">, </span>
-        </span>
     </div>
 
 
+    <!-- PUBLISHED DATE -->
+    <p th:if="${entry.book.publishedDate != null}">
 
-    <!--
-    <p>
-        <span class="label">Genre:</span>
-        <span th:text="${entry.book.genre}">
-            Genre
-        </span>
-    </p>
-    -->
-
-
-
-    <!-- Published date -->
-    <p>
         <span class="label">Published:</span>
+
         <span th:text="${entry.book.publishedDate}">
             Published Date
         </span>
+
     </p>
 
 
-    <!-- Reading status -->
+    <!-- READING STATUS -->
     <p>
+
         <span class="label">Status:</span>
-        <span th:text="${entry.readingStatus}">
+
+        <span th:if="${entry.readingStatus != null}"
+              th:text="${entry.readingStatus}">
             Reading Status
         </span>
+
+        <span th:if="${entry.readingStatus == null}">
+            No status selected
+        </span>
+
     </p>
 
 
-    <!-- Rating -->
+    <!-- CURRENT RATING -->
     <p>
-        <span class="label">Rating:</span>
+
+        <span class="label">Current Rating:</span>
 
         <span th:if="${entry.rating != null}"
               th:text="${entry.rating + ' / 5'}">
@@ -129,28 +133,86 @@
         <span th:if="${entry.rating == null}">
             Not rated yet
         </span>
+
     </p>
 
 
-    <!-- Description -->
+    <!-- UPDATE RATING -->
+    <form
+            class="rating-form"
+            th:action="@{/shelf/entries/{entryId}/rating(entryId=${entry.id})}"
+            method="post">
+
+        <label>
+            <strong>Set Rating:</strong>
+
+            <select name="rating">
+
+                <option value=""
+                        th:selected="${entry.rating == null}">
+                    No Rating
+                </option>
+
+                <option value="1"
+                        th:selected="${entry.rating == 1}">
+                    1 / 5
+                </option>
+
+                <option value="2"
+                        th:selected="${entry.rating == 2}">
+                    2 / 5
+                </option>
+
+                <option value="3"
+                        th:selected="${entry.rating == 3}">
+                    3 / 5
+                </option>
+
+                <option value="4"
+                        th:selected="${entry.rating == 4}">
+                    4 / 5
+                </option>
+
+                <option value="5"
+                        th:selected="${entry.rating == 5}">
+                    5 / 5
+                </option>
+
+            </select>
+
+        </label>
+
+        <button type="submit">
+            Update Rating
+        </button>
+
+    </form>
+
+
+    <!-- DESCRIPTION -->
     <p th:if="${entry.book.description != null}">
+
         <span class="label">Description:</span>
+
         <span th:text="${entry.book.description}">
             Description
         </span>
+
     </p>
 
 
-    <!-- ISBN -->
+    <!-- ISBN-13 -->
     <p th:if="${entry.book.isbn13 != null}">
+
         <span class="label">ISBN-13:</span>
+
         <span th:text="${entry.book.isbn13}">
             ISBN
         </span>
+
     </p>
 
 </div>
 
 </body>
 </html>
-```

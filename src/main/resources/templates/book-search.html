@@ -10,45 +10,57 @@
 
 <h1>Search Google Books</h1>
 
+<!-- BACK TO SHELF -->
+<a th:href="@{/shelf}">
+    <button type="button">Back to Shelf</button>
+</a>
+
+<br><br>
+
+<!-- SEARCH FORM -->
 <form th:action="@{/books/search}" method="get">
 
     <input
             type="text"
-            name="q"
+            name="query"
             placeholder="Search by title, author, ISBN..."
+            th:value="${param.query}"
             required>
 
-    <button type="submit">Search</button>
+    <button type="submit">
+        Search
+    </button>
 
 </form>
 
 <hr>
 
 
+<!-- SEARCH RESULTS -->
 <div th:if="${results != null}">
 
+    <!-- NO RESULTS -->
     <div th:if="${#lists.isEmpty(results)}">
         <p>No books found.</p>
     </div>
 
 
+    <!-- BOOK -->
     <div th:each="book : ${results}">
 
-
         <!-- BOOK COVER -->
-
         <div th:if="${book.volumeInfo.imageLinks != null
-                     and book.volumeInfo.imageLinks.thumbnail != null}">
+                    and book.volumeInfo.imageLinks.thumbnail != null}">
 
             <img
                     th:src="${book.volumeInfo.imageLinks.thumbnail}"
                     th:alt="${book.volumeInfo.title}"
                     width="128">
+
         </div>
 
-
         <div th:if="${book.volumeInfo.imageLinks == null
-                     or book.volumeInfo.imageLinks.thumbnail == null}">
+                    or book.volumeInfo.imageLinks.thumbnail == null}">
 
             <p>No cover available</p>
 
@@ -56,67 +68,67 @@
 
 
         <!-- TITLE -->
-
         <h2 th:text="${book.volumeInfo.title}">
             Book Title
         </h2>
 
 
         <!-- AUTHORS -->
-
         <p>
             <strong>Authors:</strong>
 
             <span
-                    th:if="${book.volumeInfo.authors != null}"
+                    th:if="${book.volumeInfo.authors != null
+                           and !#lists.isEmpty(book.volumeInfo.authors)}"
                     th:text="${#strings.listJoin(book.volumeInfo.authors, ', ')}">
-
-                Author Name
-
+                Author
             </span>
 
-            <span th:if="${book.volumeInfo.authors == null}">
+            <span th:if="${book.volumeInfo.authors == null
+                         or #lists.isEmpty(book.volumeInfo.authors)}">
                 Unknown author
             </span>
         </p>
 
 
         <!-- DESCRIPTION -->
-
-        <p th:if="${book.volumeInfo.description != null}">
+        <div th:if="${book.volumeInfo.description != null}">
 
             <strong>Description:</strong>
 
-            <span th:text="${book.volumeInfo.description}">
+            <p th:text="${book.volumeInfo.description}">
                 Description
-            </span>
+            </p>
 
-        </p>
+        </div>
 
 
         <!-- IDENTIFIERS -->
-
-        <div th:if="${book.volumeInfo.industryIdentifiers != null}">
+        <div th:if="${book.volumeInfo.industryIdentifiers != null
+                    and !#lists.isEmpty(book.volumeInfo.industryIdentifiers)}">
 
             <strong>Identifiers:</strong>
 
             <ul>
-
                 <li th:each="identifier : ${book.volumeInfo.industryIdentifiers}">
 
-                    <span th:text="${identifier.type}"></span>:
+                    <span th:text="${identifier.type}">
+                        Type
+                    </span>
 
-                    <span th:text="${identifier.identifier}"></span>
+                    :
+
+                    <span th:text="${identifier.identifier}">
+                        Identifier
+                    </span>
 
                 </li>
-
             </ul>
 
         </div>
 
 
         <!-- GOOGLE BOOK ID -->
-
         <p>
             <strong>Google Volume ID:</strong>
             <span th:text="${book.id}"></span>
@@ -124,7 +136,6 @@
 
 
         <!-- ADD TO SHELF -->
-
         <form
                 th:action="@{/shelf/add}"
                 method="post">
@@ -140,7 +151,6 @@
 
         </form>
 
-
         <hr>
 
     </div>
@@ -150,4 +160,3 @@
 </body>
 
 </html>
-```

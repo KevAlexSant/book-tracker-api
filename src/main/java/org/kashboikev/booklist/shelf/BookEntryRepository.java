@@ -1,0 +1,20 @@
+package org.kashboikev.booklist.shelf;
+
+
+import org.kashboikev.booklist.account.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+import java.util.Optional;
+
+public interface BookEntryRepository extends JpaRepository<BookEntry, Integer> {
+
+    List<BookEntry> findAllByUserUsername(String username);
+
+    boolean existsByUser_UsernameAndBook_GoogleBookId(String username, String googleBookId);
+
+    Optional<BookEntry> findByIdAndUserUsername(Long id, String username);
+
+
+
+
+}
