@@ -19,21 +19,25 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
-
     @Column(nullable = false)
     private String title;
-    @Column
-    private String genre;
-    @Column
-    private LocalDate publishedDate;
-    @Column
+    @Column(nullable = true)
+    private String publishedDate;
+    @Column(length = 10000)
     private String description;
-    @Column(unique = true)
+    @Column(unique = true, nullable = true)
     private String isbn10;
-    @Column(unique = true)
+    @Column(unique = true, nullable = true)
     private String isbn13;
-    @Column(unique = true)
+    @Column(unique = true, nullable = true)
     private String googleVolumeId;
+    @Column(nullable = true)
+    private String imageUrl;
+
+    public void addAuthor(Author author) {
+        authors.add(author);
+        author.getBooks().add(this);
+    }
 
     @ManyToMany
     @JoinTable(
@@ -42,6 +46,7 @@ public class Book {
             inverseJoinColumns = @JoinColumn(name = "author_id")
     )
     private List<Author> authors = new ArrayList<>();
+
 
 
 }
