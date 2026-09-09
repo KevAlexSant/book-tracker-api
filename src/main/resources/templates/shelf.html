@@ -72,28 +72,31 @@
     </h2>
 
 
-    <!-- Authors -->
+
     <div>
         <span class="label">Authors:</span>
 
         <span th:each="author, status : ${entry.book.authors}">
-            <span th:text="${author.firstName + ' ' + author.lastName}">
+            <span th:text="${author.name}">
                 Author Name
             </span>
 
-            <!-- Add comma unless this is the last author -->
+
             <span th:if="${!status.last}">, </span>
         </span>
     </div>
 
 
-    <!-- Genre -->
+
+    <!--
     <p>
         <span class="label">Genre:</span>
         <span th:text="${entry.book.genre}">
             Genre
         </span>
     </p>
+    -->
+
 
 
     <!-- Published date -->
