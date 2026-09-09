@@ -17,17 +17,8 @@ public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
-
-    public void addBook(Book book) {
-        books.add(book);
-        book.getAuthors().add(this);
-    }
-
     @Column
-    private String firstName;
-
-    @Column
-    private String lastName;
+    private String name;
 
     @ManyToMany(mappedBy = "authors")
     private List<Book> books = new ArrayList<>();
