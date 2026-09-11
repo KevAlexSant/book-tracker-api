@@ -17,7 +17,7 @@ public class UserService {
 
     public void register(RegisterRequest registerRequest) {
         if (userRepository.existsByUsername(registerRequest.username())) {
-            throw new IllegalStateException("Username already exists");
+            throw new UserNotFoundException("Username is already taken");
         }
 
         if (!registerRequest.password().equals(registerRequest.confirmPassword())) {
@@ -29,9 +29,5 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(registerRequest.password()));
         user.setRole(Role.USER);
         userRepository.save(user);
-    }
-
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username).orElse(null);
     }
 }

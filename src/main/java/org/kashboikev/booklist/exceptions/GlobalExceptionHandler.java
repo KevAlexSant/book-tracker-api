@@ -23,4 +23,12 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(UsernameNotAvailable.class)
+    public ResponseEntity<ErrorResponse> handleUsernameNotAvailable(UsernameNotAvailable e) {
+        ErrorResponse error = new ErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+
 }
