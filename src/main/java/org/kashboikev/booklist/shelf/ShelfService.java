@@ -68,7 +68,7 @@ public class ShelfService {
 
     }
 
-    public void EditReadingStatus(ReadingStatus readingStatus, Long bookEntryId, String username) {
+    public void EditReadingStatus(ReadingStatus readingStatus, Integer bookEntryId, String username) {
         BookEntry bookEntry = bookEntryRepository.findByIdAndUserUsername(bookEntryId, username)
                 .orElseThrow(() -> new BookEntryNotFoundException("Entry not found"));
 
@@ -76,7 +76,7 @@ public class ShelfService {
         bookEntryRepository.save(bookEntry);
     }
 
-    public void DeleteBookEntry(Long entryId, String username) {
+    public void DeleteBookEntry(Integer entryId, String username) {
         BookEntry bookEntry = bookEntryRepository.findByIdAndUserUsername(entryId, username)
                 .orElseThrow(() -> new BookEntryNotFoundException("Entry not found"));
 
