@@ -1,6 +1,7 @@
 package org.kashboikev.booklist.catolog;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
 import org.kashboikev.booklist.catolog.googlebooks.*;
 import org.springframework.stereotype.Service;
 
@@ -28,24 +29,50 @@ public class CatalogService {
     }
 
     public Book importBookFromGoogle(String googleBookId) {
+
         GoogleBookItem bookItem = googleBooksClient.getBook(googleBookId);
         VolumeInfo volumeInfo = bookItem.volumeInfo();
 
         Book book = new Book();
         book.setGoogleBookId(googleBookId);
         book.setTitle(volumeInfo.title());
-        book.setPublishedDate(volumeInfo.publishedDate());
-        book.setDescription(volumeInfo.description());
-        book.setIsbn10(volumeInfo.industryIdentifiers().get(0).identifier());
-        book.setIsbn13(volumeInfo.industryIdentifiers().get(1).identifier());
-        book.setImageUrl(volumeInfo.imageLinks().thumbnail());
 
-        for(String authors : volumeInfo.authors()) {
-            book.getAuthors().add(authors);
+        book.setPublishedDate(volumeInfo.publishedDate());
+
+        if (volumeInfo.description() != null) {
+            String description = volumeInfo.description();
+            String cleanDescription = Jsoup.parse(description).text();
+            book.setDescription(cleanDescription);
+        } else {
+            book.setDescription("");
         }
 
+
+        if (volumeInfo.industryIdentifiers() != null) {
+            for (var id : volumeInfo.industryIdentifiers()) {
+                if ("ISBN_10".equals(id.type())) {
+                    book.setIsbn10(id.identifier());
+                } else if ("ISBN_13".equals(id.type())) {
+                    book.setIsbn13(id.identifier());
+                }
+            }
+        }
+
+        if (volumeInfo.imageLinks() != null) {
+            book.setImageUrl(volumeInfo.imageLinks().thumbnail());
+        }
+
+
+
+        if (volumeInfo.authors() != null) {
+            for (String author : volumeInfo.authors()) {
+                book.getAuthors().add(author);
+            }
+        }
+
+
         bookRepository.save(book);
-        log.info("Book imported from Google Books");
+
         return book;
     }
 
