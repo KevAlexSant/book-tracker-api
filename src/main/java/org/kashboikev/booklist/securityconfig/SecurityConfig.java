@@ -29,7 +29,7 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/books/search", true)
+                        .defaultSuccessUrl("/shelf", true)
                         .permitAll()
                 ).logout(logout -> logout
                 .logoutUrl("/logout")
