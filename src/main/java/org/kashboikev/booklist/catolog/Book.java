@@ -23,7 +23,7 @@ public class Book {
     private String title;
     @Column(nullable = true)
     private String publishedDate;
-    @Column(length = 10000)
+    @Column(columnDefinition = "TEXT")
     private String description;
     @Column(unique = true, nullable = true)
     private String isbn10;
@@ -31,7 +31,7 @@ public class Book {
     private String isbn13;
     @Column(unique = true, nullable = true)
     private String googleBookId;
-    @Column(nullable = true)
+    @Column(nullable = true, length = 2000)
     private String imageUrl;
     @ElementCollection
     @CollectionTable(
