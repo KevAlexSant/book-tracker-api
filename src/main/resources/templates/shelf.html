@@ -119,21 +119,40 @@
 
     </p>
 
+    <!-- UPDATE READING STATUS -->
+    <form
+            class="status-form"
+            th:action="@{/shelf/entries/{entryId}/status(entryId=${entry.id})}"
+            method="post">
 
-    <!-- CURRENT RATING -->
+        <label>
+            <strong>Set Status:</strong>
+
+            <select name="readingStatus">
+                <option value="">No Status</option>
+                <option value="PLAN_TO_READ">Plan to Read</option>
+                <option value="READING">Reading</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="DROPPED">Dropped</option>
+            </select>
+        </label>
+
+        <button type="submit">
+            Update Status
+        </button>
+
+    </form>
+
+
     <p>
-
-        <span class="label">Current Rating:</span>
-
+        Current Rating:
         <span th:if="${entry.rating != null}"
               th:text="${entry.rating + ' / 5'}">
-            Rating
-        </span>
+    </span>
 
         <span th:if="${entry.rating == null}">
-            Not rated yet
-        </span>
-
+        None
+    </span>
     </p>
 
 
@@ -147,37 +166,12 @@
             <strong>Set Rating:</strong>
 
             <select name="rating">
-
-                <option value=""
-                        th:selected="${entry.rating == null}">
-                    No Rating
-                </option>
-
-                <option value="1"
-                        th:selected="${entry.rating == 1}">
-                    1 / 5
-                </option>
-
-                <option value="2"
-                        th:selected="${entry.rating == 2}">
-                    2 / 5
-                </option>
-
-                <option value="3"
-                        th:selected="${entry.rating == 3}">
-                    3 / 5
-                </option>
-
-                <option value="4"
-                        th:selected="${entry.rating == 4}">
-                    4 / 5
-                </option>
-
-                <option value="5"
-                        th:selected="${entry.rating == 5}">
-                    5 / 5
-                </option>
-
+                <option value="">No Rating</option>
+                <option value="1">1 / 5</option>
+                <option value="2">2 / 5</option>
+                <option value="3">3 / 5</option>
+                <option value="4">4 / 5</option>
+                <option value="5">5 / 5</option>
             </select>
 
         </label>
@@ -190,15 +184,9 @@
 
 
     <!-- DESCRIPTION -->
-    <p th:if="${entry.book.description != null}">
-
-        <span class="label">Description:</span>
-
-        <span th:text="${entry.book.description}">
-            Description
-        </span>
-
+    <p th:text="${entry.book.description}">Placeholder
     </p>
+
 
 
     <!-- ISBN-13 -->
