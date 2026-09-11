@@ -8,11 +8,11 @@ import java.util.Optional;
 
 public interface BookEntryRepository extends JpaRepository<BookEntry, Integer> {
 
-    List<BookEntry> findAllByUserUsername(String username);
-
     boolean existsByUser_UsernameAndBook_GoogleBookId(String username, String googleBookId);
 
     Optional<BookEntry> findByIdAndUserUsername(Long id, String username);
+
+    List<BookEntry> findAllByUserUsernameOrderByIdAsc(String username);
 
 
 
