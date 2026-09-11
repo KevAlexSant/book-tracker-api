@@ -28,7 +28,7 @@ public class ShelfService {
 
 
     public List<BookEntry> getAllBookEntries(String username) {
-        return bookEntryRepository.findAllByUserUsername(username);
+        return bookEntryRepository.findAllByUserUsernameOrderByIdAsc(username);
     }
 
     public void addBookEntry(String username, String googleBookId) {
@@ -59,14 +59,30 @@ public class ShelfService {
     }
 
 
-    public void EditRating(int rating, String username, Long bookEntryId) {
-
+    public void EditRating(Integer rating, String username, Integer bookEntryId) {
         BookEntry bookEntry = bookEntryRepository.findByIdAndUserUsername(bookEntryId, username)
-                .orElseThrow(() -> new BookEntryNotFoundException("User Not found"));
+                .orElseThrow(() -> new BookEntryNotFoundException("Entry not found"));
 
         bookEntry.setRating(rating);
         bookEntryRepository.save(bookEntry);
 
+    }
+
+    public void EditReadingStatus(ReadingStatus readingStatus, Long bookEntryId, String username) {
+        BookEntry bookEntry = bookEntryRepository.findByIdAndUserUsername(bookEntryId, username)
+                .orElseThrow(() -> new BookEntryNotFoundException("Entry not found"));
+
+        bookEntry.setReadingStatus(readingStatus);
+        bookEntryRepository.save(bookEntry);
+    }
+
+    public void DeleteBookEntry(Long entryId, String username) {
+        BookEntry bookEntry = bookEntryRepository.findByIdAndUserUsername(entryId, username)
+                .orElseThrow(() -> new BookEntryNotFoundException("Entry not found"));
+
+        User user = bookEntry.getUser();
+        user.getEntries().remove(bookEntry);
+        bookEntryRepository.delete(bookEntry);
     }
 
 
