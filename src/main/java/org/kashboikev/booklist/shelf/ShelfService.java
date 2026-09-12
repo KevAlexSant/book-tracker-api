@@ -59,7 +59,7 @@ public class ShelfService {
     }
 
 
-    public void EditRating(Integer rating, String username, Integer bookEntryId) {
+    public void editRating(Integer rating, String username, Integer bookEntryId) {
         BookEntry bookEntry = bookEntryRepository.findByIdAndUserUsername(bookEntryId, username)
                 .orElseThrow(() -> new BookEntryNotFoundException("Entry not found"));
 
@@ -68,7 +68,7 @@ public class ShelfService {
 
     }
 
-    public void EditReadingStatus(ReadingStatus readingStatus, Integer bookEntryId, String username) {
+    public void editReadingStatus(ReadingStatus readingStatus, Integer bookEntryId, String username) {
         BookEntry bookEntry = bookEntryRepository.findByIdAndUserUsername(bookEntryId, username)
                 .orElseThrow(() -> new BookEntryNotFoundException("Entry not found"));
 
@@ -76,7 +76,7 @@ public class ShelfService {
         bookEntryRepository.save(bookEntry);
     }
 
-    public void DeleteBookEntry(Integer entryId, String username) {
+    public void deleteBookEntry(Integer entryId, String username) {
         BookEntry bookEntry = bookEntryRepository.findByIdAndUserUsername(entryId, username)
                 .orElseThrow(() -> new BookEntryNotFoundException("Entry not found"));
 
