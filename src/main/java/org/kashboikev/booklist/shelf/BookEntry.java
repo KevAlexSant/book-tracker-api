@@ -6,12 +6,17 @@ import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 import org.kashboikev.booklist.account.User;
-import org.kashboikev.booklist.catolog.Book;
+import org.kashboikev.booklist.catalog.Book;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "book_entries")
+@Table(name = "book_entries", uniqueConstraints = { @UniqueConstraint(
+                name = "uk_user_book",
+                columnNames = {"user_id", "book_id"}
+                )
+        }
+)
 public class BookEntry {
 
     @Id
@@ -28,6 +33,7 @@ public class BookEntry {
     private ReadingStatus readingStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Min(1)
