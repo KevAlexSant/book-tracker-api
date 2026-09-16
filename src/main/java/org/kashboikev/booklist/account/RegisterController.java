@@ -1,5 +1,6 @@
 package org.kashboikev.booklist.account;
 
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +20,7 @@ public class RegisterController {
     }
 
     @PostMapping("/register")
-    public String postRegister(RegisterRequest registerRequest) {
+    public String postRegister(@Valid RegisterRequest registerRequest) {
         userService.register(registerRequest);
 
         return "redirect:/login";
