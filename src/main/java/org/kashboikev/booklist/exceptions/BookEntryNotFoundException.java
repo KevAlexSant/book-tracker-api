@@ -1,4 +1,4 @@
-package org.kashboikev.booklist.shelf;
+package org.kashboikev.booklist.exceptions;
 
 public class BookEntryNotFoundException extends RuntimeException {
     public BookEntryNotFoundException(String message) {

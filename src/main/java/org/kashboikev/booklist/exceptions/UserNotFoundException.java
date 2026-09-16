@@ -1,4 +1,4 @@
-package org.kashboikev.booklist.account;
+package org.kashboikev.booklist.exceptions;
 
 public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException(String message) {
