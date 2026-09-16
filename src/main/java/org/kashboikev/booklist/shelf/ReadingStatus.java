@@ -1,7 +1,7 @@
 package org.kashboikev.booklist.shelf;
 
 public enum ReadingStatus {
-    PLAN_TO_READ,
+    PLANED,
     READING,
     COMPLETED,
     DROPPED
