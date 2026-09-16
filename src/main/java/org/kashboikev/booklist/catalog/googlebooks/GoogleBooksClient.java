@@ -1,4 +1,4 @@
-package org.kashboikev.booklist.catolog.googlebooks;
+package org.kashboikev.booklist.catalog.googlebooks;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,13 +12,15 @@ import org.springframework.web.client.RestClient;
 public class GoogleBooksClient {
 
     private final RestClient googleBooksRestClient;
+    private final String apiKey;
 
-    public GoogleBooksClient(RestClient googleBooksRestClient) {
+    public GoogleBooksClient(
+            RestClient googleBooksRestClient,
+            @Value("${MY_API_KEY}") String apiKey) {
+
         this.googleBooksRestClient = googleBooksRestClient;
+        this.apiKey = apiKey;
     }
-
-    @Value("${MY_API_KEY}")
-    private String apiKey;
 
 
     @Retryable(value = HttpServerErrorException.class, maxRetries = 3, delay = 1000)
