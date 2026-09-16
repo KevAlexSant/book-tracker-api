@@ -3,10 +3,13 @@ package org.kashboikev.booklist.shelf;
 
 import lombok.extern.slf4j.Slf4j;
 import org.kashboikev.booklist.account.User;
-import org.kashboikev.booklist.account.UserNotFoundException;
+import org.kashboikev.booklist.exceptions.BookEntryAlreadyExistsException;
+import org.kashboikev.booklist.exceptions.BookEntryNotFoundException;
+import org.kashboikev.booklist.exceptions.InvalidRatingValueException;
+import org.kashboikev.booklist.exceptions.UserNotFoundException;
 import org.kashboikev.booklist.account.UserRepository;
-import org.kashboikev.booklist.catolog.Book;
-import org.kashboikev.booklist.catolog.CatalogService;
+import org.kashboikev.booklist.catalog.Book;
+import org.kashboikev.booklist.catalog.CatalogService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,24 +35,23 @@ public class ShelfService {
     }
 
     public void addBookEntry(String username, String googleBookId) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
 
         if (bookEntryRepository
                 .existsByUser_UsernameAndBook_GoogleBookId(username, googleBookId)) {
-            throw new IllegalStateException("Book already exists");
-        } else {
-            createBookEntry(googleBookId, username);
-
+            throw new BookEntryAlreadyExistsException("Book entry already exists");
         }
 
+        createBookEntry(googleBookId, user);
 
     }
 
 
-    public BookEntry createBookEntry(String googleBookId, String username) {
+    public BookEntry createBookEntry(String googleBookId, User user) {
 
         Book book = catalogService.getOrCreateBook(googleBookId);
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User Not found"));
 
         BookEntry bookEntry = new BookEntry();
         bookEntry.setBook(book);
@@ -59,7 +61,10 @@ public class ShelfService {
     }
 
 
-    public void editRating(Integer rating, String username, Integer bookEntryId) {
+    public void updateBookRating(Integer rating, String username, Integer bookEntryId) {
+        if(rating != null && (rating > 5 || rating < 1)){
+            throw new InvalidRatingValueException("Invalid rating value");
+        }
         BookEntry bookEntry = bookEntryRepository.findByIdAndUserUsername(bookEntryId, username)
                 .orElseThrow(() -> new BookEntryNotFoundException("Entry not found"));
 
@@ -68,7 +73,7 @@ public class ShelfService {
 
     }
 
-    public void editReadingStatus(ReadingStatus readingStatus, Integer bookEntryId, String username) {
+    public void updateReadingStatus(ReadingStatus readingStatus, Integer bookEntryId, String username) {
         BookEntry bookEntry = bookEntryRepository.findByIdAndUserUsername(bookEntryId, username)
                 .orElseThrow(() -> new BookEntryNotFoundException("Entry not found"));
 
@@ -80,8 +85,6 @@ public class ShelfService {
         BookEntry bookEntry = bookEntryRepository.findByIdAndUserUsername(entryId, username)
                 .orElseThrow(() -> new BookEntryNotFoundException("Entry not found"));
 
-        User user = bookEntry.getUser();
-        user.getEntries().remove(bookEntry);
         bookEntryRepository.delete(bookEntry);
     }
 
