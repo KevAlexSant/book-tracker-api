@@ -44,8 +44,7 @@ public class ShelfController {
     @PostMapping("/entries/{entryId}/rating")
     public String addRating(@RequestParam(required = false) Integer rating, @PathVariable Integer entryId, Authentication authentication) {
 
-
-        shelfService.editRating(rating, authentication.getName(), entryId);
+        shelfService.updateBookRating(rating, authentication.getName(), entryId);
 
         return "redirect:/shelf";
     }
@@ -53,12 +52,12 @@ public class ShelfController {
     @PostMapping("/entries/{entryId}/status")
     public String addReadingStatus(@RequestParam(required = false) ReadingStatus readingStatus, @PathVariable Integer entryId, Authentication authentication) {
         log.info("Reading status: {} in controller", readingStatus);
-        shelfService.editReadingStatus(readingStatus, entryId, authentication.getName());
+        shelfService.updateReadingStatus(readingStatus, entryId, authentication.getName());
         return "redirect:/shelf";
     }
 
     @PostMapping("/entries/{entryId}/delete")
-    public String removeReadingStatus(@PathVariable Integer entryId, Authentication authentication) {
+    public String deleteBookEntry(@PathVariable Integer entryId, Authentication authentication) {
         shelfService.deleteBookEntry(entryId, authentication.getName());
         return "redirect:/shelf";
     }
