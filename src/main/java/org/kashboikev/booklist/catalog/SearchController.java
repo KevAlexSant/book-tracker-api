@@ -1,15 +1,17 @@
 package org.kashboikev.booklist.catalog;
 
+import org.kashboikev.booklist.catalog.googlebooks.GoogleBookItem;
 import org.kashboikev.booklist.catalog.googlebooks.GoogleBooksResponse;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-
-@Controller
+@RestController
+@RequestMapping("/api/search")
 public class SearchController {
 
     private final CatalogService catalogService;
@@ -18,22 +20,20 @@ public class SearchController {
         this.catalogService = catalogService;
     }
 
-    @GetMapping("/books/search")
-    public String searchBooks(
-            @RequestParam(required = false) String query,
-            Model model) {
+
+    @GetMapping
+    public ResponseEntity<List<GoogleBookItem>> searchBooks(@RequestParam(required = false) String query) {
 
         if (query == null || query.isBlank()) {
-            model.addAttribute("results", List.of());
-            return "book-search";
+            return ResponseEntity.ok(List.of());
         }
 
-        GoogleBooksResponse response =
-                catalogService.searchBooks(query);
+        GoogleBooksResponse response = catalogService.searchBooks(query);
 
-        model.addAttribute("results", response.items());
+        List<GoogleBookItem> result = response.items() != null ? response.items() : List.of();
 
-        return "book-search";
+        return ResponseEntity.ok(result);
+
     }
 
 }
