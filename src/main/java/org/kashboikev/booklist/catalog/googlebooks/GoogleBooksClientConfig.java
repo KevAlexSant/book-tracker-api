@@ -1,4 +1,4 @@
-package org.kashboikev.booklist.catolog.googlebooks;
+package org.kashboikev.booklist.catalog.googlebooks;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

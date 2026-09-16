@@ -1,8 +1,8 @@
-package org.kashboikev.booklist.catolog;
+package org.kashboikev.booklist.catalog;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
-import org.kashboikev.booklist.catolog.googlebooks.*;
+import org.kashboikev.booklist.catalog.googlebooks.*;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -1,4 +1,4 @@
-package org.kashboikev.booklist.catolog;
+package org.kashboikev.booklist.catalog;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

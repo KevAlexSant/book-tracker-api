@@ -1,7 +1,6 @@
-package org.kashboikev.booklist.catolog;
+package org.kashboikev.booklist.catalog;
 
-import org.kashboikev.booklist.catolog.googlebooks.GoogleBooksClient;
-import org.kashboikev.booklist.catolog.googlebooks.GoogleBooksResponse;
+import org.kashboikev.booklist.catalog.googlebooks.GoogleBooksResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,4 +1,4 @@
-package org.kashboikev.booklist.catolog.googlebooks;
+package org.kashboikev.booklist.catalog.googlebooks;
 
 public record GoogleBookItem(String id, VolumeInfo volumeInfo) {
 }
