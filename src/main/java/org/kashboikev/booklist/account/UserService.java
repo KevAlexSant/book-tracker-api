@@ -1,4 +1,6 @@
 package org.kashboikev.booklist.account;
+import org.kashboikev.booklist.exceptions.PasswordsDoNotMatchException;
+import org.kashboikev.booklist.exceptions.UsernameNotAvailable;
 import org.kashboikev.booklist.shelf.Role;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,11 +19,11 @@ public class UserService {
 
     public void register(RegisterRequest registerRequest) {
         if (userRepository.existsByUsername(registerRequest.username())) {
-            throw new UserNotFoundException("Username is already taken");
+            throw new UsernameNotAvailable("Username is already taken");
         }
 
         if (!registerRequest.password().equals(registerRequest.confirmPassword())) {
-            throw new IllegalStateException("Passwords do not match");
+            throw new PasswordsDoNotMatchException("Passwords do not match");
         }
 
         User user = new User();
