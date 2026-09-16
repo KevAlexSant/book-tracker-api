@@ -1,30 +1,28 @@
 package org.kashboikev.booklist.account;
 
 import jakarta.validation.Valid;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
+@RequestMapping("/api/auth")
 public class RegisterController {
+
     private final UserService userService;
 
     public RegisterController(UserService userService) {
         this.userService = userService;
     }
 
-
-    @GetMapping("/register")
-    public String getRegister() {
-        return "register";
-    }
-
     @PostMapping("/register")
-    public String postRegister(@Valid RegisterRequest registerRequest) {
+    public ResponseEntity<Void> postRegister(
+            @Valid @RequestBody RegisterRequest registerRequest) {
+
         userService.register(registerRequest);
 
-        return "redirect:/login";
+        return ResponseEntity.noContent().build();
     }
-
-
 }
