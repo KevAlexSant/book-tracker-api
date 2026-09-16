@@ -1,16 +1,17 @@
 package org.kashboikev.booklist.shelf;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @Slf4j
-@RequestMapping("/shelf")
+@RequestMapping("/api/shelf")
 public class ShelfController {
 
 
@@ -21,44 +22,52 @@ public class ShelfController {
     }
 
     @GetMapping()
-    public String getShelf(Model model, Authentication authentication) {
-
+    public ResponseEntity<List<ShelfEntryResponse>> getShelf(Authentication authentication) {
         String username = authentication.getName();
 
         List<BookEntry> bookEntries = shelfService.getAllBookEntries(username);
 
-        model.addAttribute("bookEntries", bookEntries);
+        List<ShelfEntryResponse> responses = bookEntries.stream().map(ShelfEntryMapper::toResponse)
+                .toList();
 
-        return "shelf";
+        return ResponseEntity.ok(responses);
+
     }
 
-    @PostMapping("/add")
-    public String addBook(@RequestParam String googleBookId, Authentication authentication) {
+
+    @PostMapping
+    public ResponseEntity<Void> addBook(@RequestParam String googleBookId, Authentication authentication) {
         String username = authentication.getName();
         shelfService.addBookEntry(username, googleBookId);
-
-        return "redirect:/shelf";
-
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/entries/{entryId}/rating")
-    public String addRating(@RequestParam(required = false) Integer rating, @PathVariable Integer entryId, Authentication authentication) {
 
-        shelfService.updateBookRating(rating, authentication.getName(), entryId);
+    @PatchMapping("/entries/{entryId}/rating")
+    public ResponseEntity<Void> updateRating(@PathVariable Integer entryId,
+                                             @Valid @RequestBody UpdateRatingRequest request,
+                                             Authentication authentication) {
 
-        return "redirect:/shelf";
+        String username = authentication.getName();
+
+        shelfService.updateBookRating(request.rating(), username, entryId);
+
+        return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/entries/{entryId}/status")
-    public String addReadingStatus(@RequestParam(required = false) ReadingStatus readingStatus, @PathVariable Integer entryId, Authentication authentication) {
-        log.info("Reading status: {} in controller", readingStatus);
-        shelfService.updateReadingStatus(readingStatus, entryId, authentication.getName());
-        return "redirect:/shelf";
+
+    @PatchMapping("/entries/{entryId}/status")
+    public ResponseEntity<Void> updateReadingStatus(@Valid @RequestBody UpdateReadingRequest request,
+                                                   @PathVariable Integer entryId,
+                                                   Authentication authentication) {
+        shelfService.updateReadingStatus(request.readingStatus(), entryId, authentication.getName());
+        return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/entries/{entryId}/delete")
-    public String deleteBookEntry(@PathVariable Integer entryId, Authentication authentication) {
+
+    @DeleteMapping("/entries/{entryId}")
+    public ResponseEntity<Void> deleteEntry(@PathVariable Integer entryId, Authentication authentication) {
         shelfService.deleteBookEntry(entryId, authentication.getName());
-        return "redirect:/shelf";
+        return ResponseEntity.noContent().build();
     }
 }
