@@ -40,6 +40,7 @@ public class ShelfService {
 
     }
 
+    @Transactional
     public void addBookEntry(String username, String googleBookId) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -55,7 +56,7 @@ public class ShelfService {
     }
 
 
-    public BookEntry createBookEntry(String googleBookId, User user) {
+    private BookEntry createBookEntry(String googleBookId, User user) {
 
         Book book = catalogService.getOrCreateBook(googleBookId);
 
@@ -67,6 +68,7 @@ public class ShelfService {
     }
 
 
+    @Transactional
     public void updateBookRating(Integer rating, String username, Integer bookEntryId) {
         if(rating != null && (rating > 5 || rating < 1)){
             throw new InvalidRatingValueException("Invalid rating value");
@@ -75,18 +77,17 @@ public class ShelfService {
                 .orElseThrow(() -> new BookEntryNotFoundException("Entry not found"));
 
         bookEntry.setRating(rating);
-        bookEntryRepository.save(bookEntry);
-
     }
 
+    @Transactional
     public void updateReadingStatus(ReadingStatus readingStatus, Integer bookEntryId, String username) {
         BookEntry bookEntry = bookEntryRepository.findByIdAndUserUsername(bookEntryId, username)
                 .orElseThrow(() -> new BookEntryNotFoundException("Entry not found"));
 
         bookEntry.setReadingStatus(readingStatus);
-        bookEntryRepository.save(bookEntry);
     }
 
+    @Transactional
     public void deleteBookEntry(Integer entryId, String username) {
         BookEntry bookEntry = bookEntryRepository.findByIdAndUserUsername(entryId, username)
                 .orElseThrow(() -> new BookEntryNotFoundException("Entry not found"));
