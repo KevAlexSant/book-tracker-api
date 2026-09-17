@@ -11,6 +11,7 @@ import org.kashboikev.booklist.account.UserRepository;
 import org.kashboikev.booklist.catalog.Book;
 import org.kashboikev.booklist.catalog.CatalogService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -30,8 +31,13 @@ public class ShelfService {
     }
 
 
-    public List<BookEntry> getAllBookEntries(String username) {
-        return bookEntryRepository.findAllByUserUsernameOrderByIdAsc(username);
+    @Transactional(readOnly = true)
+    public List<ShelfEntryResponse> getAllBookEntries(String username) {
+        log.info("Getting all book entries for user: {}", username);
+        List<BookEntry> bookEntries = bookEntryRepository.findAllByUserUsernameOrderByIdAsc(username);
+
+        return bookEntries.stream().map(ShelfEntryMapper::toResponse).toList();
+
     }
 
     public void addBookEntry(String username, String googleBookId) {

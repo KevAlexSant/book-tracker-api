@@ -25,10 +25,7 @@ public class ShelfController {
     public ResponseEntity<List<ShelfEntryResponse>> getShelf(Authentication authentication) {
         String username = authentication.getName();
 
-        List<BookEntry> bookEntries = shelfService.getAllBookEntries(username);
-
-        List<ShelfEntryResponse> responses = bookEntries.stream().map(ShelfEntryMapper::toResponse)
-                .toList();
+        List<ShelfEntryResponse> responses = shelfService.getAllBookEntries(username);
 
         return ResponseEntity.ok(responses);
 
