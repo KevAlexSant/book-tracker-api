@@ -19,7 +19,23 @@ public class CatalogService {
 
 
     public GoogleBooksResponse searchBooks(String query) {
+        log.info("Searching books for query: {}", query);
+
+        String normalized = query
+                .replace("-", "")
+                .replace(" ", "");
+        log.info("Normalized query: {}", normalized);
+
+        if (isIsbn(normalized)) {
+            log.info("Query is ISBN");
+            return googleBooksClient.searchBooks("isbn:" + normalized);
+        }
+
         return googleBooksClient.searchBooks(query);
+    }
+
+    private boolean isIsbn(String query) {
+        return query.matches("\\d{13}|\\d{9}[\\dXx]");
     }
 
     public Book getOrCreateBook(String googleBookId) {
@@ -29,7 +45,7 @@ public class CatalogService {
     }
 
     public Book importBookFromGoogle(String googleBookId) {
-
+        log.info("Importing book from Google Books: {}", googleBookId);
         GoogleBookItem bookItem = googleBooksClient.getBook(googleBookId);
         VolumeInfo volumeInfo = bookItem.volumeInfo();
 
@@ -41,7 +57,9 @@ public class CatalogService {
 
         if (volumeInfo.description() != null) {
             String description = volumeInfo.description();
+            log.info("Description: {}", description);
             String cleanDescription = Jsoup.parse(description).text();
+            log.info("Cleaned description: {}", cleanDescription);
             book.setDescription(cleanDescription);
         } else {
             book.setDescription("");
