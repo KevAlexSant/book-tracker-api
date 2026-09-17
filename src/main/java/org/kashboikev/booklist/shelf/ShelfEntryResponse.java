@@ -7,6 +7,10 @@ public record ShelfEntryResponse(
         String googleBookId,
         String title,
         List<String> authors,
+        String description,
+        String publishedDate,
+        String isbn10,
+        String isbn13,
         Integer rating,
         ReadingStatus readingStatus
 ) {}
