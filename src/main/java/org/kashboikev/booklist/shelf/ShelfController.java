@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -33,9 +32,9 @@ public class ShelfController {
 
 
     @PostMapping
-    public ResponseEntity<Void> addBook(@RequestParam String googleBookId, Authentication authentication) {
+    public ResponseEntity<Void> addBook(@Valid @RequestBody AddBookRequest googleBookId, Authentication authentication) {
         String username = authentication.getName();
-        shelfService.addBookEntry(username, googleBookId);
+        shelfService.addBookEntry(username, googleBookId.googleBookId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
