@@ -12,6 +12,9 @@ spring:
       ddl-auto: update
     show-sql: true
 
-  google:
-    books:
-      api-key: ${MY_API_KEY}
+
+google:
+  books:
+    api-key: ${MY_API_KEY}
+    base-url: https://www.googleapis.com/books/v1
+    max-results: 40
