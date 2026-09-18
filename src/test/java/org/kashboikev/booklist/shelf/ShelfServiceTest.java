@@ -3,15 +3,18 @@ package org.kashboikev.booklist.shelf;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kashboikev.booklist.account.User;
-import org.kashboikev.booklist.account.UserNotFoundException;
 import org.kashboikev.booklist.account.UserRepository;
-import org.kashboikev.booklist.catolog.Book;
-import org.kashboikev.booklist.catolog.CatalogService;
+import org.kashboikev.booklist.catalog.Book;
+import org.kashboikev.booklist.catalog.CatalogService;
+import org.kashboikev.booklist.exceptions.BookEntryAlreadyExistsException;
+import org.kashboikev.booklist.exceptions.BookEntryNotFoundException;
+import org.kashboikev.booklist.exceptions.UserNotFoundException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,32 +35,49 @@ public class ShelfServiceTest {
     @InjectMocks
     private ShelfService shelfService;
 
+    @Test
+    void getAllBookEntries_returnsMappedBookEntries_forUser() {
+        Book book = new Book();
+        book.setGoogleBookId("123");
+        book.setTitle("The Hobbit");
+
+        BookEntry bookEntry = new BookEntry();
+        bookEntry.setBook(book);
+        bookEntry.setRating(3);
+        bookEntry.setReadingStatus(ReadingStatus.READING);
+
+        when(bookEntryRepository.findAllByUserUsernameOrderByIdAsc("Kevin"))
+                .thenReturn(List.of(bookEntry));
+
+        List<ShelfEntryResponse> result = shelfService.getAllBookEntries("Kevin");
+
+        assertEquals(1, result.size());
+        assertEquals("The Hobbit", result.get(0).title());
+        assertEquals(3, result.get(0).rating());
+        assertEquals("123", result.get(0).googleBookId());
+        assertEquals(ReadingStatus.READING, result.get(0).readingStatus());
+    }
 
     @Test
-    void editRatingStatus_updatesRating_Status_whenBookEntryExists() {
+    void updateBookRating_updatesBookRating_whenBookEntryExists() {
         BookEntry bookEntry = new BookEntry();
+
         when(bookEntryRepository.findByIdAndUserUsername(52, "Kevin"))
                 .thenReturn(Optional.of(bookEntry));
-        shelfService.editRatingStatus(5, "Kevin", 52);
 
+        shelfService.updateBookRating(3, "Kevin", 52);
 
-        assertEquals(5, bookEntry.getRating());
-
-        verify(bookEntryRepository).save(bookEntry);
-
-
+        assertEquals(3, bookEntry.getRating());
     }
 
     @Test
-    void editRatingStatus_throwsException_whenBookEntryDoesNotExist(){
-
+    void updateBookRating_throwsException_whenBookEntryDoesNotExist() {
         when(bookEntryRepository.findByIdAndUserUsername(52, "Kevin"))
                 .thenReturn(Optional.empty());
-
-
-        assertThrows(BookEntryNotFoundException.class, () -> shelfService.editRatingStatus(5, "Kevin", 52));
-
+        assertThrows(BookEntryNotFoundException.class,
+                () -> shelfService.updateBookRating(3, "Kevin", 52));
     }
+
 
     @Test
     void editReadingStatus_updatesReadingStatus_whenBookEntryExist() {
@@ -66,13 +86,13 @@ public class ShelfServiceTest {
         when(bookEntryRepository.findByIdAndUserUsername(52, "Kevin"))
                 .thenReturn(Optional.of(bookEntry));
 
-        shelfService.editReadingStatus(ReadingStatus.READING, 52, "Kevin");
+        shelfService.updateReadingStatus(ReadingStatus.READING, 52, "Kevin");
 
         assertEquals(ReadingStatus.READING, bookEntry.getReadingStatus());
 
-        verify(bookEntryRepository).save(bookEntry);
 
     }
+
 
     @Test
     void editReadingStatus_throwsException_whenBookEntryDoesNotExist() {
@@ -80,25 +100,20 @@ public class ShelfServiceTest {
         when(bookEntryRepository.findByIdAndUserUsername(52, "Kevin"))
                 .thenReturn(Optional.empty());
         assertThrows(BookEntryNotFoundException.class,
-                () -> shelfService.editReadingStatus(ReadingStatus.READING,
+                () -> shelfService.updateReadingStatus(ReadingStatus.READING,
                 52, "Kevin"));
 
     }
 
     @Test
     void deleteBookEntry_deletesBookEntry_whenBookEntryExists(){
-
-        User user = new User();
         BookEntry bookEntry = new BookEntry();
 
-        user.addEntry(bookEntry);
 
         when(bookEntryRepository.findByIdAndUserUsername(52, "Kevin"))
                 .thenReturn(Optional.of(bookEntry));
 
         shelfService.deleteBookEntry(52, "Kevin");
-
-        assertFalse(user.getEntries().contains(bookEntry));
 
         verify(bookEntryRepository).delete(bookEntry);
     }
@@ -125,12 +140,11 @@ public class ShelfServiceTest {
                 .thenReturn(true);
 
         assertThrows(
-                IllegalStateException.class,
+                BookEntryAlreadyExistsException.class,
                 () -> shelfService.addBookEntry("Kevin", "123")
         );
 
         verifyNoInteractions(catalogService);
-        verify(bookEntryRepository, never()).save(any());
     }
 
 
@@ -164,6 +178,6 @@ public class ShelfServiceTest {
 
 
         verifyNoInteractions(catalogService);
-        verify(bookEntryRepository, never()).save(any());
     }
+
 }

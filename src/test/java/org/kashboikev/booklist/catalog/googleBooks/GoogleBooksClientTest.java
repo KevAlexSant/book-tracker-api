@@ -1,8 +1,10 @@
-package org.kashboikev.booklist.shelf;
+package org.kashboikev.booklist.catalog.googleBooks;
 
 import org.junit.jupiter.api.Test;
 import org.kashboikev.booklist.catalog.googlebooks.GoogleBooksClient;
 import org.kashboikev.booklist.catalog.googlebooks.GoogleBooksResponse;
+import org.kashboikev.booklist.catalog.googlebooks.GoogleBooksProperties;
+import org.mockito.Mockito;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -18,6 +20,9 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 class GoogleBooksClientTest {
 
+
+
+
     @Test
     void searchBooks_sendsExpectedRequest_andDeserializesResponse() {
 
@@ -31,8 +36,14 @@ class GoogleBooksClientTest {
 
         RestClient restClient = builder.build();
 
+        GoogleBooksProperties properties = Mockito.mock(GoogleBooksProperties.class);
+
+        Mockito.when(properties.apiKey()).thenReturn("test-key");
+        Mockito.when(properties.maxResults()).thenReturn(40);
+        Mockito.when(properties.baseUrl()).thenReturn("https://www.googleapis.com/books/v1");
+
         GoogleBooksClient googleBooksClient =
-                new GoogleBooksClient(restClient, "test-key");
+                new GoogleBooksClient(restClient, properties);
 
 
         String responseJson = """
@@ -84,4 +95,6 @@ class GoogleBooksClientTest {
 
         server.verify();
     }
+
+
 }

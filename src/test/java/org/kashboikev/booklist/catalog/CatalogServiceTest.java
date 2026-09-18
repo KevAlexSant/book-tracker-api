@@ -1,11 +1,7 @@
-package org.kashboikev.booklist.shelf;
+package org.kashboikev.booklist.catalog;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.kashboikev.booklist.catalog.Book;
-import org.kashboikev.booklist.catalog.BookRepository;
-import org.kashboikev.booklist.catalog.BookSearchResponse;
-import org.kashboikev.booklist.catalog.CatalogService;
 import org.kashboikev.booklist.catalog.googlebooks.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
