@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kashboikev.booklist.catalog.Book;
 import org.kashboikev.booklist.catalog.BookRepository;
+import org.kashboikev.booklist.catalog.BookSearchResponse;
 import org.kashboikev.booklist.catalog.CatalogService;
 import org.kashboikev.booklist.catalog.googlebooks.*;
 import org.mockito.InjectMocks;
@@ -66,28 +67,25 @@ public class CatalogServiceTest {
     }
 
     @Test
-    void importBookFromGoogle_removesHtmlFromDescription(){
-        VolumeInfo volumeInfo = new VolumeInfo("The Hobbit", null,
-                "The Hobbit is a fantasy novel", null, null,
-                null);
-
-        GoogleBookItem googleBookItem = new GoogleBookItem("123", volumeInfo);
+    void getOrCreateBook_removesHtmlFromDescription() {
+        VolumeInfo mockVolumeInfo = new VolumeInfo("The hobbit",
+                null, "<p>The hobbit is a fantasy novel</p>", null, null, null);
+        GoogleBookItem googleBooksItem = new GoogleBookItem("123", mockVolumeInfo);
 
         when(googleBooksClient.getBook("123"))
-                .thenReturn(googleBookItem);
+                .thenReturn(googleBooksItem);
 
-        Book result = catalogService.importBookFromGoogle("123");
+        when(bookRepository.findByGoogleBookId("123"))
+                .thenReturn(Optional.empty());
 
-        assertEquals("The Hobbit is a fantasy novel",
-                result.getDescription());
-        assertEquals("The Hobbit", result.getTitle());
+        Book result = catalogService.getOrCreateBook("123");
 
+        assertEquals("The hobbit is a fantasy novel", result.getDescription());
         verify(bookRepository).save(result);
-
     }
 
     @Test
-    void importBookFromGoogle_setDescriptionToEmpty_WhenGoogleDescriptionIsMissing() {
+    void getOrCreateBook_setDescriptionToEmpty_WhenGoogleDescriptionIsMissing() {
         VolumeInfo volumeInfo = new VolumeInfo("The Hobbit", null,
                 null, null, null, null);
 
@@ -96,17 +94,17 @@ public class CatalogServiceTest {
         when(googleBooksClient.getBook("123"))
                 .thenReturn(googleBookItem);
 
-        Book result = catalogService.importBookFromGoogle("123");
+        Book result = catalogService.getOrCreateBook("123");
 
         assertEquals("", result.getDescription());
 
         verify(bookRepository).save(result);
-
     }
 
 
+
     @Test
-    void importBookFromGoogle_setCorrectIsbnFields_whenBothIdentifiersArePresent() {
+    void getOrCreateBook_setCorrectIsbnFields_whenBothIdentifiersArePresent() {
         IndustryIdentifier isbn13 = new IndustryIdentifier("ISBN_13",
                 "1234");
         IndustryIdentifier isbn10 = new IndustryIdentifier("ISBN_10",
@@ -120,7 +118,7 @@ public class CatalogServiceTest {
         when(googleBooksClient.getBook("123"))
                 .thenReturn(googleBookItem);
 
-        Book result = catalogService.importBookFromGoogle("123");
+        Book result = catalogService.getOrCreateBook("123");
 
         assertEquals("12345", result.getIsbn10());
         assertEquals("1234", result.getIsbn13());
@@ -131,7 +129,7 @@ public class CatalogServiceTest {
 
 
     @Test
-    void importBookFromGoogle_setsOnlyIsbn13_whenIsbn10IsMissing() {
+    void getOrCreateBook_setsOnlyIsbn13_whenIsbn10IsMissing() {
         IndustryIdentifier isbn13 = new IndustryIdentifier("ISBN_13",
                 "1234");
 
@@ -143,7 +141,7 @@ public class CatalogServiceTest {
         when(googleBooksClient.getBook("123"))
                 .thenReturn(googleBookItem);
 
-        Book result = catalogService.importBookFromGoogle("123");
+        Book result = catalogService.getOrCreateBook("123");
 
         assertNull(result.getIsbn10());
         assertEquals("1234", result.getIsbn13());
@@ -151,7 +149,7 @@ public class CatalogServiceTest {
     }
 
     @Test
-    void importBookFromGoogle_setsAuthors_whenMultipleAuthorsGiven() {
+    void getOrCreateBook_setsAuthors_whenMultipleAuthorsGiven() {
         VolumeInfo volumeInfo = new VolumeInfo(null, List.of("Kevin", "Alex"),
                 null, null, null, null);
 
@@ -160,14 +158,14 @@ public class CatalogServiceTest {
         when(googleBooksClient.getBook("123"))
                 .thenReturn(googleBookItem);
 
-        Book result = catalogService.importBookFromGoogle("123");
+        Book result = catalogService.getOrCreateBook("123");
 
         assertEquals(List.of("Kevin", "Alex"), result.getAuthors());
 
     }
 
     @Test
-    void importBookFromGoogle_leavesAuthorsEmpty_whenAuthorsAreMissing() {
+    void getOrCreateBook_leavesAuthorsEmpty_whenAuthorsAreMissing() {
         VolumeInfo volumeInfo = new VolumeInfo(null, null,
                 null, null, null, null);
 
@@ -176,14 +174,14 @@ public class CatalogServiceTest {
         when(googleBooksClient.getBook("123"))
                 .thenReturn(googleBookItem);
 
-        Book result = catalogService.importBookFromGoogle("123");
+        Book result = catalogService.getOrCreateBook("123");
 
         assertTrue(result.getAuthors().isEmpty());
     }
 
 
     @Test
-    void importBookFromGoogle_setsThumbnail_whenThumbnailIsPresent() {
+    void getOrCreateBook_setsThumbnail_whenThumbnailIsPresent() {
 
         ImageLinks imageLinks = new ImageLinks("small.jpg", "thumbnail.jpg");
 
@@ -194,7 +192,7 @@ public class CatalogServiceTest {
         when(googleBooksClient.getBook("123"))
                 .thenReturn(googleBookItem);
 
-        Book result = catalogService.importBookFromGoogle("123");
+        Book result = catalogService.getOrCreateBook("123");
 
         assertEquals("thumbnail.jpg", result.getImageUrl());
 
@@ -202,7 +200,7 @@ public class CatalogServiceTest {
     }
 
     @Test
-    void importBookFromGoogle_setsThumbnail_whenThumbnailIsAbsent() {
+    void getOrCreateBook_setsThumbnail_whenThumbnailIsAbsent() {
 
         VolumeInfo volumeInfo = new VolumeInfo(null, null, null,
                 null, null, null);
@@ -211,31 +209,46 @@ public class CatalogServiceTest {
         when(googleBooksClient.getBook("123"))
                 .thenReturn(googleBookItem);
 
-        Book result = catalogService.importBookFromGoogle("123");
+        Book result = catalogService.getOrCreateBook("123");
 
         assertNull(result.getImageUrl());
 
     }
 
     @Test
-    void searchBook_returnGoogleBooksResponse_forGivenQuery() {
-        GoogleBookItem googleBookItem = new GoogleBookItem("123", null);
-        GoogleBooksResponse googleBooksResponse = new GoogleBooksResponse(List.of(googleBookItem));
+    void searchBooks_returnsMappedBookSearchResponses_forGivenQuery() {
+        VolumeInfo volumeInfo = new VolumeInfo(
+                "Harry Potter",
+                List.of("J.K. Rowling"),
+                null,
+                null,
+                null,
+                "1997"
+        );
+
+        GoogleBookItem googleBookItem =
+                new GoogleBookItem("123", volumeInfo);
+
+        GoogleBooksResponse googleBooksResponse =
+                new GoogleBooksResponse(List.of(googleBookItem));
 
         when(googleBooksClient.searchBooks("Harry Potter"))
                 .thenReturn(googleBooksResponse);
 
-        GoogleBooksResponse result = catalogService.searchBooks("Harry Potter");
+        List<BookSearchResponse> result =
+                catalogService.searchBooks("Harry Potter");
 
-        assertSame(googleBooksResponse, result);
+        assertEquals(1, result.size());
+
+        BookSearchResponse response = result.get(0);
+
+        assertEquals("123", response.googleBookId());
+        assertEquals("Harry Potter", response.title());
+        assertEquals(List.of("J.K. Rowling"), response.authors());
+        assertEquals("1997", response.publishedDate());
+
         verify(googleBooksClient).searchBooks("Harry Potter");
     }
-
-
-
-
-
-
 
 
 }
