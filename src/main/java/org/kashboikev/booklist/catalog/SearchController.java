@@ -1,17 +1,14 @@
 package org.kashboikev.booklist.catalog;
 
-import org.kashboikev.booklist.catalog.googlebooks.GoogleBookItem;
-import org.kashboikev.booklist.catalog.googlebooks.GoogleBooksResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/search")
+@Slf4j
 public class SearchController {
 
     private final CatalogService catalogService;
@@ -22,17 +19,14 @@ public class SearchController {
 
 
     @GetMapping
-    public ResponseEntity<List<GoogleBookItem>> searchBooks(@RequestParam(required = false) String query) {
-
+    public ResponseEntity<List<BookSearchResponse>> searchBooks(String query) {
+        log.info("Searching books for query: {}", query);
         if (query == null || query.isBlank()) {
             return ResponseEntity.ok(List.of());
         }
 
-        GoogleBooksResponse response = catalogService.searchBooks(query);
-
-        List<GoogleBookItem> result = response.items() != null ? response.items() : List.of();
-
-        return ResponseEntity.ok(result);
+        List<BookSearchResponse> responses = catalogService.searchBooks(query);
+        return ResponseEntity.ok(responses);
 
     }
 
