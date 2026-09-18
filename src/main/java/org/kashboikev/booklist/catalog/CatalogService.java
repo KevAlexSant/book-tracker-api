@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.kashboikev.booklist.catalog.googlebooks.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -17,8 +19,7 @@ public class CatalogService {
         this.bookRepository = bookRepository;
     }
 
-
-    public GoogleBooksResponse searchBooks(String query) {
+    public List<BookSearchResponse> searchBooks(String query) {
         log.info("Searching books for query: {}", query);
 
         String normalized = query
@@ -26,25 +27,40 @@ public class CatalogService {
                 .replace(" ", "");
         log.info("Normalized query: {}", normalized);
 
+        GoogleBooksResponse response;
+
         if (isIsbn(normalized)) {
             log.info("Query is ISBN");
-            return googleBooksClient.searchBooks("isbn:" + normalized);
+            response =  googleBooksClient.searchBooks("isbn:" + normalized);
+        } else {
+            log.info("Query is not ISBN");
+            response =  googleBooksClient.searchBooks(query);
         }
 
-        return googleBooksClient.searchBooks(query);
+        List<GoogleBookItem> result = response.items() != null ? response.items() : List.of();
+
+        return result.stream().map(BookSearchMapper::toResponse).toList();
+
+
+
+
+
+
     }
 
     private boolean isIsbn(String query) {
         return query.matches("\\d{13}|\\d{9}[\\dXx]");
     }
 
+
+    @Transactional
     public Book getOrCreateBook(String googleBookId) {
         return bookRepository.findByGoogleBookId(googleBookId)
                 .orElseGet(() -> importBookFromGoogle(googleBookId));
 
     }
 
-    public Book importBookFromGoogle(String googleBookId) {
+    private Book importBookFromGoogle(String googleBookId) {
         log.info("Importing book from Google Books: {}", googleBookId);
         GoogleBookItem bookItem = googleBooksClient.getBook(googleBookId);
         VolumeInfo volumeInfo = bookItem.volumeInfo();
@@ -57,9 +73,7 @@ public class CatalogService {
 
         if (volumeInfo.description() != null) {
             String description = volumeInfo.description();
-            log.info("Description: {}", description);
             String cleanDescription = Jsoup.parse(description).text();
-            log.info("Cleaned description: {}", cleanDescription);
             book.setDescription(cleanDescription);
         } else {
             book.setDescription("");
