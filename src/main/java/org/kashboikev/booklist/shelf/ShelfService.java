@@ -1,11 +1,9 @@
 package org.kashboikev.booklist.shelf;
 
-
 import lombok.extern.slf4j.Slf4j;
 import org.kashboikev.booklist.account.User;
 import org.kashboikev.booklist.exceptions.BookEntryAlreadyExistsException;
 import org.kashboikev.booklist.exceptions.BookEntryNotFoundException;
-import org.kashboikev.booklist.exceptions.InvalidRatingValueException;
 import org.kashboikev.booklist.exceptions.UserNotFoundException;
 import org.kashboikev.booklist.account.UserRepository;
 import org.kashboikev.booklist.catalog.Book;
@@ -63,6 +61,7 @@ public class ShelfService {
         BookEntry bookEntry = new BookEntry();
         bookEntry.setBook(book);
         bookEntry.setUser(user);
+        bookEntry.setReadingStatus(ReadingStatus.READING);
         bookEntryRepository.save(bookEntry);
         return bookEntry;
     }
@@ -70,9 +69,6 @@ public class ShelfService {
 
     @Transactional
     public void updateBookRating(Integer rating, String username, Integer bookEntryId) {
-        if(rating != null && (rating > 5 || rating < 1)){
-            throw new InvalidRatingValueException("Invalid rating value");
-        }
         BookEntry bookEntry = bookEntryRepository.findByIdAndUserUsername(bookEntryId, username)
                 .orElseThrow(() -> new BookEntryNotFoundException("Entry not found"));
 

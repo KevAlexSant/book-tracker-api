@@ -1,9 +1,11 @@
 package org.kashboikev.booklist.account;
+
 import org.kashboikev.booklist.exceptions.PasswordsDoNotMatchException;
 import org.kashboikev.booklist.exceptions.UsernameNotAvailable;
-import org.kashboikev.booklist.shelf.Role;
+import org.kashboikev.booklist.securityconfig.Role;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
@@ -17,6 +19,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional
     public void register(RegisterRequest registerRequest) {
         if (userRepository.existsByUsername(registerRequest.username())) {
             throw new UsernameNotAvailable("Username is already taken");
