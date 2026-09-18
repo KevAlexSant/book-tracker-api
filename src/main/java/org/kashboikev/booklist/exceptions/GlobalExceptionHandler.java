@@ -1,6 +1,7 @@
 package org.kashboikev.booklist.exceptions;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,55 +14,70 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException e) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage());
-
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    public ProblemDetail handleUserNotFoundException(UserNotFoundException e) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND, e.getMessage());
+        problem.setTitle("User not found");
+        return problem;
     }
 
     @ExceptionHandler(BookEntryNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleBookEntryNotFoundException(BookEntryNotFoundException e) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    public ProblemDetail handleBookEntryNotFoundException(BookEntryNotFoundException e) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND, e.getMessage());
+        problem.setTitle("Book entry not found");
+        return problem;
     }
 
     @ExceptionHandler(UsernameNotAvailable.class)
-    public ResponseEntity<ErrorResponse> handleUsernameNotAvailable(UsernameNotAvailable e) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    public ProblemDetail handleUsernameNotAvailable(UsernameNotAvailable e) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT, e.getMessage());
+        problem.setTitle("Username not available");
+        return problem;
     }
 
     @ExceptionHandler(PasswordsDoNotMatchException.class)
-    public ResponseEntity<ErrorResponse> handlePasswordsDoNotMatchException(PasswordsDoNotMatchException e) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(), e.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.UNPROCESSABLE_ENTITY);
+    public ProblemDetail handlePasswordsDoNotMatchException(PasswordsDoNotMatchException e) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        problem.setTitle("Passwords do not match");
+        return problem;
     }
 
     @ExceptionHandler(BookEntryAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleBookEntryAlreadyExists(BookEntryAlreadyExistsException e) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.CONTINUE.value(), e.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler(InvalidRatingValueException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidRatingValue(InvalidRatingValueException e) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(), e.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.UNPROCESSABLE_ENTITY);
+    public ProblemDetail handleBookEntryAlreadyExists(BookEntryAlreadyExistsException e) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT, e.getMessage());
+        problem.setTitle("Book entry already exists");
+        return problem;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException e) {
+    public ProblemDetail handleValidationException(
+            MethodArgumentNotValidException e) {
+
         Map<String, String> errors = new HashMap<>();
 
-        e.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
+        e.getBindingResult()
+                .getFieldErrors()
+                .forEach(error ->
+                        errors.put(
+                                error.getField(),
+                                error.getDefaultMessage()
+                        )
+                );
 
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "One or more fields failed validation"
+        );
+
+        problem.setTitle("Validation failed");
+        problem.setProperty("errors", errors);
+
+        return problem;
     }
 
 }
