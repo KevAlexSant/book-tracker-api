@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.kashboikev.booklist.shelf.BookEntry;
-import org.kashboikev.booklist.shelf.Role;
+import org.kashboikev.booklist.securityconfig.Role;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,12 +18,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
 
-    public void addEntry(BookEntry bookEntry) {
-        entries.add(bookEntry);
-        bookEntry.setUser(this);
-
-    }
-
     @Column(nullable = false, unique = true)
     private String username;
 
@@ -35,8 +29,6 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    @OneToMany(mappedBy = "user")
-    private List<BookEntry> entries = new ArrayList<>();
 
 
 }
