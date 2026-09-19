@@ -20,7 +20,8 @@ import org.kashboikev.booklist.catalog.Book;
 public class BookEntry {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "book_entry_seq_generator")
+    @SequenceGenerator(name = "book_entry_seq_generator", sequenceName = "book_entries_seq", allocationSize = 1)
     private Integer id;
 
 
@@ -29,7 +30,7 @@ public class BookEntry {
     private Book book;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = true)
+    @Column(nullable = false)
     private ReadingStatus readingStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
