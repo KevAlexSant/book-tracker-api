@@ -34,6 +34,8 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
     implementation 'org.jsoup:jsoup:1.23.2'
     testImplementation 'org.springframework.boot:spring-boot-starter-restclient-test'
+    implementation 'org.springframework.boot:spring-boot-starter-flyway'
+    runtimeOnly 'org.flywaydb:flyway-database-postgresql'
 }
 
 tasks.named('test') {
