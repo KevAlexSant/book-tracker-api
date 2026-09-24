@@ -10,7 +10,7 @@ public record RegisterRequest(
         String username,
 
         @NotBlank(message = "Password must be between 8 - 50 characters")
-        @Size(min = 3, max = 50)
+        @Size(min = 8, max = 50)
         String password,
 
         @NotBlank
