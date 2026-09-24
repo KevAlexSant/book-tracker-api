@@ -3,9 +3,9 @@ spring:
     name: book-list
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/mydb
-    username: postgres
-    password: mypassword
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/mydb}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:mypassword}
 
   jpa:
     hibernate:
@@ -13,7 +13,7 @@ spring:
     show-sql: true
 
   flyway:
-      location: classpath:db/migration
+    locations: classpath:db/migration
 
 
 google:
