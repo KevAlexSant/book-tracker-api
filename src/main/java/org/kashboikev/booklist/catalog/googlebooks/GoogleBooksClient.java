@@ -1,8 +1,6 @@
 package org.kashboikev.booklist.catalog.googlebooks;
 
 import lombok.extern.slf4j.Slf4j;
-import org.kashboikev.booklist.securityconfig.GoogleBooksProperties;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.resilience.annotation.Retryable;
 import org.springframework.web.client.HttpServerErrorException;
